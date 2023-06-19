@@ -60,7 +60,7 @@ if not WGET_AT:
 #
 # Update this each time you make a non-cosmetic change.
 # It will be added to the WARC files and reported to the tracker.
-VERSION = '20230619.02'
+VERSION = '20230619.03'
 USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36'
 TRACKER_ID = 'banciyuan'
 TRACKER_HOST = 'legacy-api.arpa.li'
@@ -403,8 +403,8 @@ class WgetArgs(object):
 project = Project(
     title=TRACKER_ID,
     project_html='''
-        <img class="project-logo" alt="Project logo" src="" height="50px" title=""/>
-        <h2>Banciyuan <span class="links"><a href="https://bcy.net/">Website</a> &middot; <a href="http://tracker.archiveteam.org/bcy/">Leaderboard</a> &middot; <a href="https://wiki.archiveteam.org/index.php/Xuite">Wiki</a></span></h2>
+        <img class="project-logo" alt="Project logo" src="https://wiki.archiveteam.org/images/e/e9/Banciyuan-icon.png" height="50px" title=""/>
+        <h2>Banciyuan <span class="links"><a href="https://bcy.net/">Website</a> &middot; <a href="http://tracker.archiveteam.org/bcy/">Leaderboard</a> &middot; <a href="https://wiki.archiveteam.org/index.php/Banciyuan">Wiki</a></span></h2>
         <p>Archiving Banciyuan.</p>
     ''',
     utc_deadline = datetime.datetime(2023, 7, 12, 8, 0, 0) # Midnight Beijing
