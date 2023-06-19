@@ -25,7 +25,7 @@ We strongly encourage you to join the IRC channel associated with this project i
 
 #### Archive Team Warrior (recommended for most users)
 
-This and other archiving projects can easily be run using the [Archive Team Warrior](https://wiki.archiveteam.org/index.php/ArchiveTeam_Warrior) virtual machine. Follow the [instructions on the Archive Team wiki](https://wiki.archiveteam.org/index.php/ArchiveTeam_Warrior) for installing the Warrior, and from the web interface running at http://localhost:8001/, enter the nickname that you want to be shown as on the tracker. You don't need to register it, just pick a nickname you like. Then, select the "LINE BLOG" project in the Warrior interface.
+This and other archiving projects can easily be run using the [Archive Team Warrior](https://wiki.archiveteam.org/index.php/ArchiveTeam_Warrior) virtual machine. Follow the [instructions on the Archive Team wiki](https://wiki.archiveteam.org/index.php/ArchiveTeam_Warrior) for installing the Warrior, and from the web interface running at http://localhost:8001/, enter the nickname that you want to be shown as on the tracker. You don't need to register it, just pick a nickname you like. Then, select the "Banciyuan" project in the Warrior interface.
 
 #### Project-specific Docker container (for more advanced users)
 

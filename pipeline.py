@@ -60,7 +60,7 @@ if not WGET_AT:
 #
 # Update this each time you make a non-cosmetic change.
 # It will be added to the WARC files and reported to the tracker.
-VERSION = '20230619.03'
+VERSION = '20230619.04'
 USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36'
 TRACKER_ID = 'banciyuan'
 TRACKER_HOST = 'legacy-api.arpa.li'
@@ -342,42 +342,46 @@ class WgetArgs(object):
                 wget_args.extend(['--warc-header', 'banciyuan-video-list: '+item_value])
                 wget_args.append('https://bcy.net/video/list/'+item_value)
             # image
-            # only p3-bcy-sign.bcyimg.com requires ?x-expires={[0-9]+}&x-signature={[0-9A-Za-z%2B%2F%3D]+}
             elif item_type == 'img':
-                # git hub.com/saveweb/fourdimensions-archive/blob/main/fourdimensions/utils/image.py
-                # git hub.com/mikf/gallery-dl/issues/592#issuecomment-582504626
-                # git hub.com/mikf/gallery-dl/issues/613
-                # blog.cs dn.net/hotdog233/article/details/119380498
-                assert re.match(r'^[0-9A-Za-z]+/[0-9A-Za-z/]*[0-9a-f]{32}(?:/fat)(?:\.[0-9a-z]+)$', item_value), item_value
-                image_space = item_name.split('/', 1)[0]
-                # assert image_space in ['banciyuan', 'bcy-static' 'tos-cn-i-bcyx', 'ttfe'], item_value
-                wget_args.extend(['--warc-header', 'banciyuan-image: '+item_value])
-                if image_space in ['banciyuan']:
-                    ### p1-bcy.byteimg.com.wsglb0.com
-                    # wget_args.append('https://p1-bcy.byteimg.com/{}~tplv-banciyuan-obj.image'.format(item_value))
-                    ### p3-bcy.bcyimg.com.w.alikunlun.com
-                    wget_args.append('https://p3-bcy.bcyimg.com/{}~tplv-banciyuan-obj.image'.format(item_value))
-                    # wget_args.append('https://p3-bcy.bcyimg.com/{}~tplv-banciyuan-ivs.image'.format(item_value))
-                    # wget_args.append('https://p3-bcy.bcyimg.com/{}~tplv-banciyuan-w650.image'.format(item_value))
-                    # wget_args.append('https://p3-bcy.bcyimg.com/{}~tplv-banciyuan-w230.image'.format(item_value))
-                    # wget_args.append('https://p3-bcy.bcyimg.com/{}~tplv-banciyuan-sq360.image'.format(item_value))
-                    # wget_args.append('https://p3-bcy.bcyimg.com/{}~tplv-banciyuan-sq90.image'.format(item_value))
-                    # wget_args.append('https://p3-bcy.bcyimg.com/{}~tplv-banciyuan-abig.image'.format(item_value))
-                    # wget_args.append('https://p3-bcy.bcyimg.com/{}~tplv-banciyuan-2X2.image'.format(item_value))
-                    ### p9-bcy.bcyimg.com.bsgslb.com
-                    # wget_args.append('https://p9-bcy.bcyimg.com/{}~tplv-banciyuan-obj.image'.format(item_value))
-                if image_space in ['banciyuan'] and re.match(r'[0-9a-f]{32}\.[0-9a-z]+$', item_value):
-                    item_banciyuan = re.match(r'^banciyuan/(.+)', item_value)[1]
-                    ### 77fyex04.v5.com.z0.glb.qiniudns.com
-                    # wget_args.append('https://img5.bcyimg.com/{}'.format(item_banciyuan))
-                    ### 77fyex.v5.com.z0.glb.qiniudns.com
-                    # wget_args.append('https://img9.bcyimg.com/{}'.format(item_banciyuan))
-                    ### 77fyex02.v5.com.z0.glb.qiniudns.com
-                    # wget_args.append('https://static.bcyimg.com/{}'.format(item_banciyuan))
-                    ### img-bcy-qn.pstatp.com.qiniudns.com
-                    wget_args.append('https://img-bcy-qn.pstatp.com/{}'.format(item_banciyuan))
-                    # wget_args.append('https://img-bcy-qn.pstatp.com/{}/w650'.format(item_banciyuan))
-                    # wget_args.append('https://img-bcy-qn.pstatp.com/{}/w230'.format(item_banciyuan))
+                # only p3-bcy-sign.bcyimg.com requires ?x-expires={[0-9]+}&x-signature={[0-9A-Za-z%2B%2F%3D]+}
+                if re.search(r'\?x-expires=[0-9]+&x-signature=[0-9A-Za-z%]+$', item_value):
+                    wget_args.extend(['--warc-header', 'banciyuan-image: '+item_value])
+                    wget_args.append('https://p3-bcy-sign.bcyimg.com/{}'.format(item_value))
+                else:
+                    # git hub.com/saveweb/fourdimensions-archive/blob/main/fourdimensions/utils/image.py
+                    # git hub.com/mikf/gallery-dl/issues/592#issuecomment-582504626
+                    # git hub.com/mikf/gallery-dl/issues/613
+                    # blog.cs dn.net/hotdog233/article/details/119380498
+                    assert re.search(r'^[0-9A-Za-z]+/[0-9A-Za-z/]*[0-9a-f]{32}(?:/fat)?(?:\.[0-9a-z]+)?$', item_value), item_value
+                    image_space = item_name.split('/', 1)[0]
+                    # assert image_space in ['banciyuan', 'bcy-static' 'tos-cn-i-bcyx', 'ttfe'], item_value
+                    wget_args.extend(['--warc-header', 'banciyuan-image: '+item_value])
+                    if image_space in ['banciyuan']:
+                        ### p1-bcy.byteimg.com.wsglb0.com
+                        # wget_args.append('https://p1-bcy.byteimg.com/{}~tplv-banciyuan-obj.image'.format(item_value))
+                        ### p3-bcy.bcyimg.com.w.alikunlun.com
+                        wget_args.append('https://p3-bcy.bcyimg.com/{}~tplv-banciyuan-obj.image'.format(item_value))
+                        # wget_args.append('https://p3-bcy.bcyimg.com/{}~tplv-banciyuan-ivs.image'.format(item_value))
+                        # wget_args.append('https://p3-bcy.bcyimg.com/{}~tplv-banciyuan-w650.image'.format(item_value))
+                        # wget_args.append('https://p3-bcy.bcyimg.com/{}~tplv-banciyuan-w230.image'.format(item_value))
+                        # wget_args.append('https://p3-bcy.bcyimg.com/{}~tplv-banciyuan-sq360.image'.format(item_value))
+                        # wget_args.append('https://p3-bcy.bcyimg.com/{}~tplv-banciyuan-sq90.image'.format(item_value))
+                        # wget_args.append('https://p3-bcy.bcyimg.com/{}~tplv-banciyuan-abig.image'.format(item_value))
+                        # wget_args.append('https://p3-bcy.bcyimg.com/{}~tplv-banciyuan-2X2.image'.format(item_value))
+                        ### p9-bcy.bcyimg.com.bsgslb.com
+                        # wget_args.append('https://p9-bcy.bcyimg.com/{}~tplv-banciyuan-obj.image'.format(item_value))
+                    if image_space in ['banciyuan'] and re.search(r'[0-9a-f]{32}\.[0-9a-z]+$', item_value):
+                        item_banciyuan = re.match(r'^banciyuan/(.+)', item_value)[1]
+                        ### 77fyex04.v5.com.z0.glb.qiniudns.com
+                        # wget_args.append('https://img5.bcyimg.com/{}'.format(item_banciyuan))
+                        ### 77fyex.v5.com.z0.glb.qiniudns.com
+                        # wget_args.append('https://img9.bcyimg.com/{}'.format(item_banciyuan))
+                        ### 77fyex02.v5.com.z0.glb.qiniudns.com
+                        # wget_args.append('https://static.bcyimg.com/{}'.format(item_banciyuan))
+                        ### img-bcy-qn.pstatp.com.qiniudns.com
+                        wget_args.append('https://img-bcy-qn.pstatp.com/{}'.format(item_banciyuan))
+                        # wget_args.append('https://img-bcy-qn.pstatp.com/{}/w650'.format(item_banciyuan))
+                        # wget_args.append('https://img-bcy-qn.pstatp.com/{}/w230'.format(item_banciyuan))
             # other URLs
             elif item_type == 'url':
                 wget_args.append(item_value)

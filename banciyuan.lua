@@ -147,6 +147,7 @@ find_item = function(url)
     if string.match(url, "^https?://p3%-bcy%-sign%.bcyimg%.com/")
       or string.match(url, "^https?://p3%-bcy%.bcyimg%.com/")
       or string.match(url, "^https?://p9%-bcy%.bcyimg%.com/") then
+      -- strip both 图片处理配置模板 (image processing configuration templates, tplv-[a-zA-Z0-9_-]*) and 鉴权参数 (authentication parameters, ?x-expires=[0-9a-f]+&x-signature=[0-9A-Za-z%]+)
       local image_path = string.match(url, "^https?://[^/]*bcyimg%.com/(banciyuan/[^~?]+)~[^?]+%.image")
       if not image_path then
         image_path = string.match(url, "^https?://[^/]*bcyimg%.com/img/(banciyuan/[^~?]+)~[^?]+%.image")
@@ -162,10 +163,15 @@ find_item = function(url)
       end
       if image_path then
         assert(string.match(image_path, "^img/banciyuan/") == nil)
+        assert(string.match(image_path, "%?x%-expires=[0-9]+&x%-signature=[0-9A-Za-z%%]+$") == nil)
         value = image_path
         type_ = "img"
       else
         error("Unrecognizeg image URL: " .. url)
+      end
+      local image_signed_path = string.match(url, "^https?://p3%-bcy%-sign%.bcyimg%.com/(.+%?x%-expires=[0-9]+&x%-signature=[0-9A-Za-z%%]+)$")
+      if image_signed_path then
+        discover_item(discovered_items, "img:" .. image_signed_path)
       end
       if string.match(url, "^https?://[^/]*bcyimg%.com/banciyuan/user/[0-9]+/")
         or string.match(url, "^https?://[^/]*bcyimg%.com/img/banciyuan/user/[0-9]+/") then
@@ -233,14 +239,16 @@ end
 local VIDEO_LIST_DEPTH_THRESHOLD = 100
 
 allowed = function(url, parenturl)
-  if
-    -- images with x-signature should be downloaded immediately
-       string.match(url, "^https?://p3%-bcy%-sign%.bcyimg%.com/")
-    -- videos with session key should be downloaded immediately
-    or string.match(url, "^https?://v[0-9]+%-video%.bcy%.net/") then
+  -- videos with session key should be downloaded immediately
+  if string.match(url, "^https?://v[0-9]+%-video%.bcy%.net/") then
     return true
   elseif string.match(url, "^https?://[^/]*video%.bcy%.net/") then
     error("Unrecognizeg video URL: " .. url)
+  end
+
+  -- images with x-signature can be delayed
+  if string.match(url, "^https?://p3%-bcy%-sign%.bcyimg%.com/") then
+    return false
   end
 
   -- separate items and strip _source_page
@@ -1552,11 +1560,11 @@ end
 
 wget.callbacks.write_to_warc = function(url, http_stat)
   status_code = http_stat["statcode"]
+  set_item(url["url"])
   url_count = url_count + 1
   io.stdout:write(url_count .. "=" .. status_code .. " " .. url["url"] .. " \n")
   io.stdout:flush()
   logged_response = true
-  set_item(url["url"])
   if not item_name then
     error("No item name found.")
   end
@@ -1579,7 +1587,8 @@ wget.callbacks.write_to_warc = function(url, http_stat)
     return false
   end
   if http_stat["statcode"] ~= 200
-    and http_stat["statcode"] ~= 301 then
+    and http_stat["statcode"] ~= 301
+    and http_stat["statcode"] ~= 404 then
     retry_url = true
     return false
   end
@@ -1607,6 +1616,9 @@ wget.callbacks.httploop_result = function(url, err, http_stat)
   end
 
   set_item(url["url"])
+  if not item_name then
+    error("No item name found.")
+  end
 
   if status_code >= 300 and status_code <= 399 then
     local newloc = urlparse.absolute(url["url"], http_stat["newloc"])
@@ -1641,7 +1653,7 @@ wget.callbacks.httploop_result = function(url, err, http_stat)
       math.floor(math.pow(2, tries-0.5)),
       math.floor(math.pow(2, tries))
     )
-    io.stdout:write("Sleeping " .. sleep_time .. " seconds.\n")
+    io.stdout:write(" Sleeping " .. sleep_time .. " seconds.\n")
     io.stdout:flush()
     os.execute("sleep " .. sleep_time)
     return wget.actions.CONTINUE
