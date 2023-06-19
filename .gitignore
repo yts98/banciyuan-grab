@@ -1,7 +1,5 @@
 *~
-*.pyc
-wget-lua
+*.old
 wget-at
 STOP
-BANNED
 data/

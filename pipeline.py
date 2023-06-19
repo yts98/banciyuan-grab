@@ -60,7 +60,7 @@ if not WGET_AT:
 #
 # Update this each time you make a non-cosmetic change.
 # It will be added to the WARC files and reported to the tracker.
-VERSION = '20230619.01'
+VERSION = '20230619.02'
 USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36'
 TRACKER_ID = 'banciyuan'
 TRACKER_HOST = 'legacy-api.arpa.li'
@@ -350,7 +350,7 @@ class WgetArgs(object):
                 # blog.cs dn.net/hotdog233/article/details/119380498
                 assert re.match(r'^[0-9A-Za-z]+/[0-9A-Za-z/]*[0-9a-f]{32}(?:/fat)(?:\.[0-9a-z]+)$', item_value), item_value
                 image_space = item_name.split('/', 1)[0]
-                assert True or image_space in ['banciyuan', 'bcy-static' 'tos-cn-i-bcyx', 'ttfe'], item_value
+                # assert image_space in ['banciyuan', 'bcy-static' 'tos-cn-i-bcyx', 'ttfe'], item_value
                 wget_args.extend(['--warc-header', 'banciyuan-image: '+item_value])
                 if image_space in ['banciyuan']:
                     ### p1-bcy.byteimg.com.wsglb0.com
